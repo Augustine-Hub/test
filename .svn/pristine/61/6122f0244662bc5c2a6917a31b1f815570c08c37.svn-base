@@ -1,0 +1,56 @@
+/**
+ * Sora Tracker
+ **/
+
+
+(function(window, undefined) {
+
+
+    var track = {};
+
+    track.URL_PARAM_KEY = "aqours";
+
+    track.getParam = function(name, defaultValue) {
+        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+        if (results) {
+            return results[1] || defaultValue;
+        }
+
+        return defaultValue;
+    };
+
+    track.getBrowserInfo = function() {
+        var info = {};
+
+        info.sw = window.screen.width || 0;
+        info.sh = window.screen.height || 0;
+        info.t = (new Date()).getTime();
+
+        return info;
+    };
+
+    track.send = function(args) {
+        var u = "//japari.linovel.net/cp/lk/track/activity?";
+        for (var key in args) {
+            u += key + "="  + encodeURIComponent(args[key]) + "&"
+        }
+
+        var img = new Image();
+        img.src = u;
+    };
+
+    track.run = function() {
+        var planName = this.getParam(this.URL_PARAM_KEY, null);
+        if (planName) {
+            var info = this.getBrowserInfo();
+            info.plan = planName;
+            info.url = location.href;
+            info.referer = document.referer || "-";
+
+            track.send(info);
+        }
+    };
+
+    track.run();
+
+})(window);
